@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đặt Vé Máy Bay</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+header {
+    background: #333;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin: 0 10px;
+}
+
+nav ul li a {
+    color: #fff;
+    text-decoration: none;
+}
+
+main {
+    padding: 20px;
+}
+
+section {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+input, select, button {
+    display: block;
+    margin-bottom: 10px;
+    padding: 10px;
+    width: 100%;
+}
+
+button {
+    background-color: #28a745;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #218838;
+}
+
+#results-container .flight {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
+
+#results-container .flight h3 {
+    margin: 0;
+}
+
+#results-container .flight button {
+    background-color: #007bff;
+    border: none;
+    color: white;
+    cursor: pointer;
+}
+
+#results-container .flight button:hover {
+    background-color: #0056b3;
+}
+
+footer {
+    background: #333;
+    color: #fff;
+    text-align: center;
+    padding: 10px;
+}
+<body>
+    <header>
+        <h1>Trang Đặt Vé Máy Bay</h1>
+        <nav>
+            <ul>
+                <li><a href="#">Trang Chủ</a></li>
+                <li><a href="#search-form">Tìm Kiếm Vé</a></li>
+                <li><a href="#booking-form">Đặt Vé</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+
+        <section id="search-form">
+            <h2>Tìm kiếm vé máy bay</h2>
+            <form id="flight-search-form">
+                <label for="departure">Điểm khởi hành:</label>
+                <input type="text" id="departure" name="departure" list="departure-cities" required>
+                <datalist id="departure-cities">
+                    
+                </datalist>
+
+                <label for="destination">Điểm đến:</label>
+                <input type="text" id="destination" name="destination" list="destination-cities" required>
+                <datalist id="destination-cities">
+                    
+                </datalist>
+
+                <label for="departure-date">Ngày đi:</label>
+                <input type="date" id="departure-date" name="departure-date" required>
+
+                <label for="return-date">Ngày về:</label>
+                <input type="date" id="return-date" name="return-date">
+
+                <label for="flight-class">Hạng ghế:</label>
+                <select id="flight-class" name="flight-class">
+                    <option value="economy">Phổ thông</option>
+                    <option value="business">Thương gia</option>
+                </select>
+
+                <label for="price-range">Khoảng giá:</label>
+                <input type="number" id="min-price" name="min-price" placeholder="Từ" min="0">
+                <input type="number" id="max-price" name="max-price" placeholder="Đến" min="0">
+
+                <button type="submit">Tìm kiếm</button>
+            </form>
+        </section>
+
+        
+        <section id="search-results">
+            <h2>Kết quả tìm kiếm</h2>
+            <div id="results-container"></div>
+        </section>
+
+        
+        <section id="booking-form">
+            <h2>Đặt Vé Máy Bay</h2>
+            <form id="book-flight-form">
+                <label for="full-name">Họ và tên:</label>
+                <input type="text" id="full-name" name="full-name" required>
+
+                <label for="passport-number">Số hộ chiếu:</label>
+                <input type="text" id="passport-number" name="passport-number" required>
+
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+
+                <label for="phone">Số điện thoại:</label>
+                <input type="tel" id="phone" name="phone" required>
+
+                <label for="payment-method">Phương thức thanh toán:</label>
+                <select id="payment-method" name="payment-method" required>
+                    <option value="credit-card">Thẻ tín dụng</option>
+                    <option value="paypal">PayPal</option>
+                    <option value="bank-transfer">Chuyển khoản ngân hàng</option>
+                </select>
+
+                <button type="submit">Xác Nhận Đặt Vé</button>
+            </form>
+        </section>
+
+        
+        <section id="booking-review" style="display: none;">
+            <h2>Xem Trước Đặt Vé</h2>
+            <div id="review-container"></div>
+            <button id="confirm-booking">Xác Nhận Đặt Vé</button>
+            <button id="cancel-booking">Hủy</button>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; Trang Đặt Vé Máy Bay của Việt Nam</p>
+    </footer>
+
+    <script src="scripts.js"></script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const searchForm = document.getElementById('flight-search-form');
+    const resultsContainer = document.getElementById('results-container');
+    const bookingForm = document.getElementById('book-flight-form');
+    const bookingReviewSection = document.getElementById('booking-review');
+    const reviewContainer = document.getElementById('review-container');
+    const confirmBookingButton = document.getElementById('confirm-booking');
+    const cancelBookingButton = document.getElementById('cancel-booking');
+
+    
+    const cities = [
+        'Hà Nội', 'Hồ Chí Minh', 'Đà Nẵng', 'Hải Phòng', 'Cần Thơ', 'Nha Trang', 'Huế', 'Vinh',
+        'Pleiku', 'Buôn Ma Thuột', 'Tuy Hòa', 'Phú Quốc', 'Rạch Giá', 'Côn Đảo', 'Thanh Hóa', 'Lao Cai'
+    ];
+
+    
+    const departureCities = document.getElementById('departure-cities');
+    const destinationCities = document.getElementById('destination-cities');
+
+    cities.forEach(city => {
+        const option = document.createElement('option');
+        option.value = city;
+        departureCities.appendChild(option);
+        destinationCities.appendChild(option.cloneNode(true));
+    });
+
+    // Dữ liệu chuyến bay 
+    const flights = [
+        // Hà Nội
+        { id: 1, flightNumber: 'VN101', departure: 'Hà Nội', destination: 'Hồ Chí Minh', departureTime: '08:00', arrivalTime: '10:30', price: '1,200,000 VNĐ' },
+        { id: 2, flightNumber: 'VN102', departure: 'Hà Nội', destination: 'Đà Nẵng', departureTime: '12:00', arrivalTime: '14:00', price: '1,000,000 VNĐ' },
+        { id: 3, flightNumber: 'VN103', departure: 'Hà Nội', destination: 'Nha Trang', departureTime: '15:00', arrivalTime: '17:00', price: '1,500,000 VNĐ' },
+        { id: 4, flightNumber: 'VN104', departure: 'Hà Nội', destination: 'Cần Thơ', departureTime: '19:00', arrivalTime: '21:30', price: '1,800,000 VNĐ' },
+
+        // Hồ Chí Minh
+        { id: 5, flightNumber: 'VN105', departure: 'Hồ Chí Minh', destination: 'Đà Nẵng', departureTime: '09:00', arrivalTime: '11:00', price: '1,200,000 VNĐ' },
+        { id: 6, flightNumber: 'VN106', departure: 'Hồ Chí Minh', destination: 'Nha Trang', departureTime: '13:00', arrivalTime: '14:00', price: '1,000,000 VNĐ' },
+        { id: 7, flightNumber: 'VN107', departure: 'Hồ Chí Minh', destination: 'Phú Quốc', departureTime: '17:00', arrivalTime: '18:00', price: '1,200,000 VNĐ' },
+        { id: 8, flightNumber: 'VN108', departure: 'Hồ Chí Minh', destination: 'Côn Đảo', departureTime: '21:00', arrivalTime: '22:00', price: '1,500,000 VNĐ' },
+
+        // Đà Nẵng
+        { id: 9, flightNumber: 'VN109', departure: 'Đà Nẵng', destination: 'Hải Phòng', departureTime: '10:00', arrivalTime: '12:00', price: '1,200,000 VNĐ' },
+        { id: 10, flightNumber: 'VN110', departure: 'Đà Nẵng', destination: 'Pleiku', departureTime: '14:00', arrivalTime: '15:00', price: '1,000,000 VNĐ' },
+        { id: 11, flightNumber: 'VN111', departure: 'Đà Nẵng', destination: 'Buôn Ma Thuột', departureTime: '16:00', arrivalTime: '17:00', price: '1,200,000 VNĐ' },
+
+        // Hải Phòng
+        { id: 12, flightNumber: 'VN112', departure: 'Hải Phòng', destination: 'Huế', departureTime: '09:00', arrivalTime: '10:30', price: '1,200,000 VNĐ' },
+
+        // Cần Thơ
+        { id: 13, flightNumber: 'VN113', departure: 'Cần Thơ', destination: 'Nha Trang', departureTime: '12:00', arrivalTime: '13:30', price: '1,800,000 VNĐ' },
+
+        // Nha Trang
+        { id: 14, flightNumber: 'VN114', departure: 'Nha Trang', destination: 'Rạch Giá', departureTime: '18:00', arrivalTime: '19:00', price: '1,500,000 VNĐ' },
+
+        // Thanh Hóa
+        { id: 15, flightNumber: 'VN115', departure: 'Thanh Hóa', destination: 'Lao Cai', departureTime: '08:00', arrivalTime: '09:30', price: '1,300,000 VNĐ' },
+
+        // Lao Cai
+        { id: 16, flightNumber: 'VN116', departure: 'Lao Cai', destination: 'Hồ Chí Minh', departureTime: '14:00', arrivalTime: '17:00', price: '1,600,000 VNĐ' },
+    ];
+
+    // Tìm kiếm chuyến bay
+    searchForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        const departure = document.getElementById('departure').value;
+        const destination = document.getElementById('destination').value;
+        const departureDate = document.getElementById('departure-date').value;
+        const returnDate = document.getElementById('return-date').value;
+        const flightClass = document.getElementById('flight-class').value;
+        const minPrice = parseInt(document.getElementById('min-price').value.replace(/[^0-9]/g, '')) || 0;
+        const maxPrice = parseInt(document.getElementById('max-price').value.replace(/[^0-9]/g, '')) || Infinity;
+
+        // Lọc kết quả chuyến bay
+        const filteredFlights = flights.filter(flight => 
+            flight.departure.toLowerCase().includes(departure.toLowerCase()) &&
+            flight.destination.toLowerCase().includes(destination.toLowerCase()) &&
+            flight.price.replace(/[^0-9]/g, '') >= minPrice &&
+            flight.price.replace(/[^0-9]/g, '') <= maxPrice
+        );
+
+        resultsContainer.innerHTML = filteredFlights.length > 0 ? 
+            filteredFlights.map(flight => `
+                <div class="flight">
+                    <h3>Chuyến bay ${flight.flightNumber}</h3>
+                    <p>Điểm khởi hành: ${flight.departure}</p>
+                    <p>Điểm đến: ${flight.destination}</p>
+                    <p>Giờ khởi hành: ${flight.departureTime}</p>
+                    <p>Giờ đến: ${flight.arrivalTime}</p>
+                    <p>Giá: ${flight.price}</p>
+                    <button data-flight-id="${flight.id}" class="book-flight-btn">Đặt Vé</button>
+                </div>
+            `).join('') : '<p>Không tìm thấy chuyến bay phù hợp.</p>';
+
+        document.querySelectorAll('.book-flight-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const flightId = this.getAttribute('data-flight-id');
+                showBookingReview(flightId);
+            });
+        });
+    });
+
+    function showBookingReview(flightId) {
+        
+        const flight = flights.find(f => f.id == flightId);
+        
+        reviewContainer.innerHTML = `
+            <h3>Thông tin chuyến bay</h3>
+            <p>Chuyến bay: ${flight.flightNumber}</p>
+            <p>Điểm khởi hành: ${flight.departure}</p>
+            <p>Điểm đến: ${flight.destination}</p>
+            <p>Giờ khởi hành: ${flight.departureTime}</p>
+            <p>Giờ đến: ${flight.arrivalTime}</p>
+            <p>Giá: ${flight.price}</p>
+            <h4>Thông tin người đặt vé</h4>
+            <p>Họ và tên: <span id="review-full-name">${document.getElementById('full-name').value}</span></p>
+            <p>Số hộ chiếu: <span id="review-passport-number">${document.getElementById('passport-number').value}</span></p>
+            <p>Email: <span id="review-email">${document.getElementById('email').value}</span></p>
+            <p>Số điện thoại: <span id="review-phone">${document.getElementById('phone').value}</span></p>
+            <p>Phương thức thanh toán: <span id="review-payment-method">${document.getElementById('payment-method').value}</span></p>
+        `;
+        
+        confirmBookingButton.addEventListener('click', function () {
+            alert('Vé của bạn đã được đặt thành công!');
+            bookingReviewSection.style.display = 'none';
+        });
+        
+        cancelBookingButton.addEventListener('click', function () {
+            bookingReviewSection.style.display = 'none';
+        });
+
+        bookingReviewSection.style.display = 'block';
+    }
+
+    
+    bookingForm.addEventListener('submit', function (event) {
+        event.preventDefault();
+        
+        const selectedFlight = document.querySelector('.book-flight-btn');
+        if (selectedFlight) {
+            const flightId = selectedFlight.getAttribute('data-flight-id');
+            showBookingReview(flightId);
+        }
+    });
+});
